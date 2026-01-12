@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "raylib.h"
 
-#define WHEAT_COUNT 6
+#define WHEAT_COUNT 10
 #define DEFAULT_COOLDOWN 5.0f
 
 typedef struct {
@@ -29,7 +29,7 @@ void drawWheats(Wheat wheat[]) {
         else if(stage == 2) color = DARKGREEN;
         else if(stage == 1) color = DARKBROWN;
     
-        DrawRectangle(i * 100 + 100, 100, 50, 50, color);
+        DrawRectangle((i % 4) * 100 + 100, (i / 4)  * 100 + 100, 50, 50, color);
     }
 }
 
@@ -57,8 +57,8 @@ int main() {
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos = GetMousePosition();
             for(int i = 0; i < WHEAT_COUNT; i++) {
-                float posX = i * 100 + 100;
-                float posY = 100;
+                float posX = (i % 4) * 100 + 100;
+                float posY = (i / 4) * 100 + 100;
                 float width = 50;
                 float height = 50;
                 if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && posY < posY + height) {                  
