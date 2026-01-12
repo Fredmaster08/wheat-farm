@@ -33,7 +33,7 @@ void updateWheats(Wheat wheat[], float dt) {
     }
 }
 
-void drawWheats(Wheat wheat[]) {
+void drawWheats(Wheat wheat[], Texture2D* stage7) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
         int stage = wheat[i].stage;
         Color color;
@@ -42,9 +42,23 @@ void drawWheats(Wheat wheat[]) {
         else if(stage == 2) color = DARKGREEN;
         else if(stage == 1) color = DARKBROWN;
         if(wheat[i].durability <= 0) color = WHITE;
-        DrawRectangle((i % 4) * 100 + 100, (i / 4)  * 100 + 100, 50, 50, color);
+        
+        Rectangle source = {
+            .x = 0,
+            .y = 0,
+            .width = stage7->width,
+            .height = stage7->height,
+        };
+        Rectangle dest = {
+            .x = (i % 4) * 100 + 100,
+            .y = (i / 4)  * 100 + 100,
+            .width = 50,
+            .height = 50,
+        };
+        DrawTexturePro(*stage7, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
     }
 }
+
 
 int main() {
 
@@ -52,9 +66,15 @@ int main() {
     initWheats(wheat);
 
     int score = 0;
+    int currentStage;
 
-    InitWindow(800, 600, "Test");
+    InitWindow(800, 600, "Wheat-Farm");
     SetTargetFPS(60);
+    Texture2D stage7 = LoadTexture("ressource/wheat_stage_7.png");
+
+    for(int i = 0; i < 8; i++) {
+        currentStage = LoadTexture("ressource/wheat_stage_%d.png", i);
+    }
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -81,7 +101,7 @@ int main() {
         BeginDrawing();
 
         ClearBackground(BLACK);
-        drawWheats(wheat);
+        drawWheats(wheat, &stage7);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
 
         EndDrawing();
