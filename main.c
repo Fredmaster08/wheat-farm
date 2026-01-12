@@ -80,7 +80,7 @@ int main() {
                 float width = 50;
                 float height = 50;
                 if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && mousePos.y < posY + height) {              
-                    if(wheat[i].stage > 1) {
+                    if(wheat[i].stage > 0) {
                         score += wheat[i].stage; 
                         wheat[i].stage = 0;
                         wheat[i].cooldown = DEFAULT_COOLDOWN;
