@@ -1,14 +1,23 @@
 
 #include <stdio.h>
 #include "raylib.h"
+#include <stdlib.h>
+#include <time.h>
 
-#define WHEAT_COUNT 10
+#define WHEAT_COUNT 20
 #define DEFAULT_COOLDOWN 5.0f
 
 typedef struct {
     int stage;
     float cooldown; // secs
 }Wheat;
+
+void initalWheats(Wheat wheat[]) {
+    for(int i = 0; i < WHEAT_COUNT; i++) {
+        wheat[i].stage = rand() % 3 + 1;
+        wheat[i].cooldown = DEFAULT_COOLDOWN;
+    }
+}
 
 void updateWheats(Wheat wheat[], float dt) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
@@ -36,15 +45,7 @@ void drawWheats(Wheat wheat[]) {
 int main() {
 
     Wheat wheat[WHEAT_COUNT];
-    wheat[0].stage = 1;
-    wheat[1].stage = 2;
-    wheat[2].stage = 3;
-    wheat[3].stage = 4;
-
-    wheat[0].cooldown = DEFAULT_COOLDOWN;
-    wheat[1].cooldown = DEFAULT_COOLDOWN;
-    wheat[2].cooldown = DEFAULT_COOLDOWN;
-    wheat[3].cooldown = DEFAULT_COOLDOWN;
+    initalWheats(wheat);
 
     int score = 0;
 
@@ -61,7 +62,7 @@ int main() {
                 float posY = (i / 4) * 100 + 100;
                 float width = 50;
                 float height = 50;
-                if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && posY < posY + height) {                  
+                if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && mousePos.y < posY + height) {                
                     if(wheat[i].stage > 1) {
                         score += wheat[i].stage; 
                         wheat[i].stage = 1;
