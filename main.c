@@ -33,23 +33,15 @@ void updateWheats(Wheat wheat[], float dt) {
     }
 }
 
-void drawWheats(Wheat wheat[]) {
+void drawWheats(Wheat wheat[], Texture2D wheatTextures[8]) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
         int stage = wheat[i].stage;
-        Texture2D stage7 = LoadTexture("ressource/wheat_stage_7.png");
-        Texture2D stage6 = LoadTexture("ressource/wheat_stage_6.png");
-        Texture2D stage5 = LoadTexture("ressource/wheat_stage_5.png");
-        Texture2D stage4 = LoadTexture("ressource/wheat_stage_4.png");
-        Texture2D stage3 = LoadTexture("ressource/wheat_stage_3.png");
-        Texture2D stage2 = LoadTexture("ressource/wheat_stage_2.png");
-        Texture2D stage1 = LoadTexture("ressource/wheat_stage_1.png");
-        Texture2D stage0 = LoadTexture("ressource/wheat_stage_0.png");
-        
+                
         Rectangle source = {
             .x = 0,
             .y = 0,
-            .width = stage7.width,
-            .height = stage7.height,
+            .width = wheatTextures[0].width,
+            .height = wheatTextures[0].height,
         };
         Rectangle dest = {
             .x = (i % 4) * 100 + 100,
@@ -57,17 +49,9 @@ void drawWheats(Wheat wheat[]) {
             .width = 50,
             .height = 50,
         };
-        if(wheat[i].stage == 0) DrawTexturePro(stage0, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 1) DrawTexturePro(stage1, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 2) DrawTexturePro(stage2, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 3) DrawTexturePro(stage3, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 4) DrawTexturePro(stage4, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 5) DrawTexturePro(stage5, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 6) DrawTexturePro(stage6, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
-        if(wheat[i].stage == 7) DrawTexturePro(stage7, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+        DrawTexturePro(wheatTextures[wheat[i].stage], source, dest, (Vector2){0, 0}, 0.0f, WHITE);
     }
 }
-
 
 int main() {
 
@@ -78,6 +62,12 @@ int main() {
 
     InitWindow(800, 600, "Wheat-Farm");
     SetTargetFPS(60);
+
+    Texture2D wheatTextures[8];
+    for (int i = 0; i < 8; i++) {
+        const char* texturePath = TextFormat("ressource/wheat_stage_%d.png", i);
+        wheatTextures[i] = LoadTexture(texturePath);
+    }
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -104,8 +94,9 @@ int main() {
         BeginDrawing();
 
         ClearBackground(BLACK);
-        drawWheats(wheat);
+        drawWheats(wheat, wheatTextures);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
+        DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
 
         EndDrawing();
     }
