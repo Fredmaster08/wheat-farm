@@ -89,11 +89,11 @@ int main() {
                 float width = 50;
                 float height = 50;
                 if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && mousePos.y < posY + height) {              
-                    if(wheat[i].stage > 0) {
-                        score += wheat[i].stage; 
+                    if(wheat[i].stage > 0 && wheat[i].durability > 0.0f) {
+                        score += wheat[i].stage;
                         wheat[i].stage = 0;
                         wheat[i].cooldown = DEFAULT_COOLDOWN;
-                        wheat[i].durability = DEFAULT_DURABILITY;  
+                        wheat[i].durability = DEFAULT_DURABILITY;
                     }
                 }
             }
