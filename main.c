@@ -5,8 +5,8 @@
 #include <time.h>
 
 #define WHEAT_COUNT 20
-#define DEFAULT_COOLDOWN 5.0f
-#define DEFAULT_DURABILITY 20.0f
+#define DEFAULT_COOLDOWN 1.0f
+#define DEFAULT_DURABILITY 5.0f
 
 typedef struct {
     int stage;
@@ -33,7 +33,7 @@ void updateWheats(Wheat wheat[], float dt) {
     }
 }
 
-void drawWheats(Wheat wheat[], Texture2D wheatTextures[8]) {
+void drawWheats(Wheat wheat[], Texture2D wheatTextures[8], Texture2D signTexture) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
         int stage = wheat[i].stage;
                 
@@ -50,6 +50,14 @@ void drawWheats(Wheat wheat[], Texture2D wheatTextures[8]) {
             .height = 50,
         };
         DrawTexturePro(wheatTextures[wheat[i].stage], source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+        if(wheat[i].durability <= 0.0f) {
+            dest.width += 10;
+            dest.height += 10;
+            dest.height *= 0.6f;
+            source.width = signTexture.width;
+            source.height = signTexture.height * 0.6f;
+            DrawTexturePro(signTexture, source, dest, (Vector2){0, 0}, 19.0f, WHITE);
+        }
     }
 }
 
@@ -68,6 +76,7 @@ int main() {
         const char* texturePath = TextFormat("ressource/wheat_stage_%d.png", i);
         wheatTextures[i] = LoadTexture(texturePath);
     }
+    Texture2D signTexture = LoadTexture("ressource/sign.png");
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -84,7 +93,7 @@ int main() {
                         score += wheat[i].stage; 
                         wheat[i].stage = 0;
                         wheat[i].cooldown = DEFAULT_COOLDOWN;
-                        wheat[i].durability = DEFAULT_DURABILITY;
+                        wheat[i].durability = DEFAULT_DURABILITY;  
                     }
                 }
             }
@@ -94,7 +103,7 @@ int main() {
         BeginDrawing();
 
         ClearBackground(BLACK);
-        drawWheats(wheat, wheatTextures);
+        drawWheats(wheat, wheatTextures, signTexture);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
         DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
 
