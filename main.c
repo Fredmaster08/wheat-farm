@@ -5,8 +5,10 @@
 #include <time.h>
 
 #define WHEAT_COUNT 20
-#define DEFAULT_COOLDOWN 1.0f
-#define DEFAULT_DURABILITY 5.0f
+#define DEFAULT_COOLDOWN 5.0f
+#define DEFAULT_DURABILITY 20.0f
+#define MAX_FRAME_SPEED 15
+#define MIN_FRAME_SPEED 1
 
 typedef struct {
     int stage;
@@ -77,9 +79,27 @@ int main() {
         wheatTextures[i] = LoadTexture(texturePath);
     }
     Texture2D signTexture = LoadTexture("ressource/sign.png");
+    Texture2D woodie = LoadTexture("ressource/woodcutter.png");
+    Vector2 wodPos = {350.0f, 280.0f};
+    Rectangle frameRec = {0.0f, 0.0f, (float)woodie.width/6, (float)woodie.height};
+    int currentFrame;
+    int frameCounter = 0;
+    int frameSpeed = 8;
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
+
+        frameCounter++;
+        if(frameCounter >= 60/frameSpeed) {
+            frameCounter = 0;
+            currentFrame++;
+            if(currentFrame > 5) currentFrame = 0;
+            frameRec.x = (float)currentFrame*(float)woodie.width/6;
+        }
+        if(IsKeyPressed(KEY_RIGHT)) frameSpeed++;
+        else if(IsKeyPressed(KEY_LEFT)) frameSpeed--;
+        if(frameSpeed > MAX_FRAME_SPEED) frameSpeed = MAX_FRAME_SPEED;
+        else if(frameSpeed < MIN_FRAME_SPEED) frameCounter = MIN_FRAME_SPEED;
 
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos = GetMousePosition();
@@ -103,12 +123,22 @@ int main() {
         BeginDrawing();
 
         ClearBackground(BLACK);
+        DrawTexture(woodie, 15, 40, WHITE);
+        DrawRectangleLines(15, 40, woodie.width, woodie.height, LIME);
+        DrawRectangleLines(15 + (int)frameRec.x, 40 + (int)frameRec.y, (int)frameRec.width, (int)frameRec.height, BLUE);
+        for(int i = 0; i < MAX_FRAME_SPEED; i++) {
+            if(i < frameSpeed) DrawRectangle(250 + 21 * i, 205, 20, 20, RED);
+            DrawRectangleLines(250 + 21 * i, 205, 20, 20, MAROON);
+        }
+        DrawTextureRec(woodie, frameRec, wodPos, WHITE);
         drawWheats(wheat, wheatTextures, signTexture);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
         DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
 
         EndDrawing();
     }
+    UnloadTexture(woodie);
+
     CloseWindow();
 
     return 0;
