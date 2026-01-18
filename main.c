@@ -61,19 +61,17 @@ void drawWheats(Wheat wheat[], Texture2D wheatTextures[8], Texture2D signTexture
     }
 }
 
-void drawWoody(Texture2D woody, Vector2 woodyPos) {
-    Rectangle source = {
-        .x = 0,
-        .y = 0,
-        .width = woody.width,
-        .height = woody.height,
-    };
+void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFlipped) {
+
     Rectangle dest = {
         .x = woodyPos.x,
         .y = woodyPos.y,
-        .width = 50,
-        .height = 50,
+        .width = 100,
+        .height = 100,
     };
+    if(woodyFlipped == true) {
+        woody.width = -woody.width;
+    }
     DrawTexturePro(woody, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
 }
 
@@ -93,11 +91,20 @@ int main() {
         wheatTextures[i] = LoadTexture(texturePath);
     }
     Texture2D signTexture = LoadTexture("ressource/sign.png");
-    Texture2D woody = LoadTexture("ressource/1 Woodcutter/Woodcutter.png");
+    Texture2D woody = LoadTexture("ressource/1 Woodcutter/Woodcutter_run.png");
     Vector2 woodyPos = {0};
+    Rectangle frameRec = {0.0f, 0.0f, woody.width / 6, woody.height};
+
+    bool woodyFlipped = false;
+    float time = 0.0f;
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
+        time += dt;
+        if(time >= 0.15f) {
+            frameRec.x += woody.width / 6;
+            time = 0.0f;
+        }
 
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos = GetMousePosition();
@@ -123,9 +130,11 @@ int main() {
             woodyPos.y += 1;
         }
         if(IsKeyDown(KEY_A)) {
+            woodyFlipped = true;
             woodyPos.x -= 1;
         }
         if(IsKeyDown(KEY_D)) {
+            woodyFlipped = false;
             woodyPos.x += 1;
         }
 
@@ -135,7 +144,7 @@ int main() {
 
         ClearBackground(BLACK);
         drawWheats(wheat, wheatTextures, signTexture);
-        drawWoody(woody, woodyPos);
+        drawWoody(woody, woodyPos, frameRec, woodyFlipped);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
         DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
 
