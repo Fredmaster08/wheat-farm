@@ -62,17 +62,33 @@ void drawWheats(Wheat wheat[], Texture2D wheatTextures[8], Texture2D signTexture
 }
 
 void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFlipped) {
-
     Rectangle dest = {
         .x = woodyPos.x,
         .y = woodyPos.y,
-        .width = 100,
-        .height = 100,
+        .width = 75,
+        .height = 75,
     };
     if(woodyFlipped == true) {
         woody.width = -woody.width;
     }
     DrawTexturePro(woody, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+}
+
+void moveWoody(Vector2* woodyPos, bool* woodyFlipped) {
+    if(IsKeyDown(KEY_W)) {
+        woodyPos->y -= 1;
+    }
+    if(IsKeyDown(KEY_S)) {
+        woodyPos->y += 1;
+    }
+    if(IsKeyDown(KEY_A)) {
+        *woodyFlipped = true;
+        woodyPos->x -= 1;
+    }
+    if(IsKeyDown(KEY_D)) {
+        *woodyFlipped = false;
+        woodyPos->x += 1;
+    }
 }
 
 int main() {
@@ -120,24 +136,15 @@ int main() {
                         wheat[i].cooldown = DEFAULT_COOLDOWN;
                         wheat[i].durability = DEFAULT_DURABILITY;
                     }
+                    if(woody.width && woody.height == wheatTextures->width && wheatTextures->height) {
+                        wheat[i].stage = 0;
+                    }   
                 }
             }
         }
-        if(IsKeyDown(KEY_W)) {
-            woodyPos.y -= 1;
-        }
-        if(IsKeyDown(KEY_S)) {
-            woodyPos.y += 1;
-        }
-        if(IsKeyDown(KEY_A)) {
-            woodyFlipped = true;
-            woodyPos.x -= 1;
-        }
-        if(IsKeyDown(KEY_D)) {
-            woodyFlipped = false;
-            woodyPos.x += 1;
-        }
+        
 
+        moveWoody(&woodyPos, &woodyFlipped);
         updateWheats(wheat, dt);
 
         BeginDrawing();
