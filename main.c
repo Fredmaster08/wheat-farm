@@ -76,18 +76,27 @@ void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFl
 
 void moveWoody(Vector2* woodyPos, bool* woodyFlipped) {
     if(IsKeyDown(KEY_W)) {
-        woodyPos->y -= 1;
+        woodyPos->y -= 2;
     }
     if(IsKeyDown(KEY_S)) {
-        woodyPos->y += 1;
+        woodyPos->y += 2;
     }
     if(IsKeyDown(KEY_A)) {
         *woodyFlipped = true;
-        woodyPos->x -= 1;
+        woodyPos->x -= 2;
     }
     if(IsKeyDown(KEY_D)) {
         *woodyFlipped = false;
-        woodyPos->x += 1;
+        woodyPos->x += 2;
+    }
+}
+
+void checkOverlap(Vector2* woodyPos, Texture2D woody, Wheat wheat[], Texture2D wheatTextures[8]) {
+    for(int i = 0; i < WHEAT_COUNT; i++) {
+        if(woodyPos->x && woodyPos->y) {
+            wheat->stage = 0;
+            printf("woodyPos: %d\n", woodyPos);
+        }        
     }
 }
 
@@ -129,21 +138,18 @@ int main() {
                 float posY = (i / 4) * 100 + 100;
                 float width = 50;
                 float height = 50;
-                if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && mousePos.y < posY + height) {              
+                if(posX < mousePos.x && posY < mousePos.y && mousePos.x < posX + width && mousePos.y < posY + height) {                                  
                     if(wheat[i].stage > 0 && wheat[i].durability > 0.0f) {
                         score += wheat[i].stage;
                         wheat[i].stage = 0;
                         wheat[i].cooldown = DEFAULT_COOLDOWN;
                         wheat[i].durability = DEFAULT_DURABILITY;
                     }
-                    if(woody.width && woody.height == wheatTextures->width && wheatTextures->height) {
-                        wheat[i].stage = 0;
-                    }   
                 }
             }
         }
         
-
+        
         moveWoody(&woodyPos, &woodyFlipped);
         updateWheats(wheat, dt);
 
