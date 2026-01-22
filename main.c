@@ -91,16 +91,25 @@ void moveWoody(Vector2* woodyPos, bool* woodyFlipped) {
     }
 }
 
-void checkOverlap(Vector2 woodyPos, Texture2D woody, Wheat* wheat[], Texture2D* wheatTextures[8], Rectangle* dest) {
+void checkOverlap(Vector2 woodyPos, Wheat wheat[WHEAT_COUNT], int* score) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
-        if(
-            (woodyPos.x + woody.width <= dest->x ||
-             woodyPos.x >= dest->x + dest->width ||
-             woodyPos.y + woody.height <= dest->y ||
-             woodyPos.y >= dest->y + dest->height)
-        ) {
-            
-        }       
+        Rectangle dest = {
+            .x = (i % 4) * 100 + 100,
+            .y = (i / 4)  * 100 + 100,
+            .width = 50,
+            .height = 50,
+        };
+        if(woodyPos.x + 75 > dest.x &&
+           woodyPos.x < dest.x + dest.width &&
+           woodyPos.y + 75 > dest.y &&
+           woodyPos.y < dest.y + dest.height) {
+            if(wheat[i].stage > 0 && wheat[i].durability > 0.0f) {
+                *score += wheat[i].stage;
+                wheat[i].stage = 0;
+                wheat[i].cooldown = DEFAULT_COOLDOWN;
+                wheat[i].durability = DEFAULT_DURABILITY;
+            }
+        }
     }
 }
 
@@ -153,7 +162,6 @@ int main() {
             }
         }
         
-        
         moveWoody(&woodyPos, &woodyFlipped);
         updateWheats(wheat, dt);
 
@@ -162,7 +170,7 @@ int main() {
         ClearBackground(BLACK);
         drawWheats(wheat, wheatTextures, signTexture);
         drawWoody(woody, woodyPos, frameRec, woodyFlipped);
-        checkOverlap(woodyPos, woody, &wheat, &wheatTextures, &dest);
+        checkOverlap(woodyPos, wheat, &score);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
         DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
 
