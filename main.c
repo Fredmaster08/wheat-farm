@@ -14,6 +14,14 @@ typedef struct {
     float durability;
 }Wheat;
 
+typedef struct {
+    int x;
+    int y;
+    int width;
+    int height;
+    int offset;
+}Woody;
+
 void initWheats(Wheat wheat[]) {
     for(int i = 0; i < WHEAT_COUNT; i++) {
         wheat[i].stage = rand() % 3 + 1;
@@ -61,7 +69,7 @@ void drawWheats(Wheat wheat[], Texture2D wheatTextures[8], Texture2D signTexture
     }
 }
 
-void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFlipped) {
+void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFlipped, Woody owoody) {
     Rectangle dest = {
         .x = woodyPos.x,
         .y = woodyPos.y,
@@ -71,6 +79,13 @@ void drawWoody(Texture2D woody, Vector2 woodyPos, Rectangle source, bool woodyFl
     if(woodyFlipped == true) {
         woody.width = -woody.width;
     }
+    if( woodyPos.x + 75 > dest.x &&
+        woodyPos.x < dest.x + dest.width &&
+        woodyPos.y + 75 > dest.y &&
+        woodyPos.y < dest.y + dest.height ) {
+            owoody.offset = woody.width / 2;
+            owoody.offset = woody.height / 2;
+        }
     DrawTexturePro(woody, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
 }
 
@@ -132,6 +147,7 @@ int main() {
     Texture2D woody = LoadTexture("ressource/1 Woodcutter/Woodcutter_run.png");
     Vector2 woodyPos = {0};
     Rectangle frameRec = {0.0f, 0.0f, woody.width / 6, woody.height};
+    Woody owoody;
 
     bool woodyFlipped = false;
     float time = 0.0f;
@@ -169,7 +185,7 @@ int main() {
 
         ClearBackground(BLACK);
         drawWheats(wheat, wheatTextures, signTexture);
-        drawWoody(woody, woodyPos, frameRec, woodyFlipped);
+        drawWoody(woody, woodyPos, frameRec, woodyFlipped, owoody);
         checkOverlap(woodyPos, wheat, &score);
         DrawText(TextFormat("Score: %d", score), 10, 10, 20, RAYWHITE);
         DrawText(TextFormat("FPS: %d", (int)(1.0f / dt)), 10, 40, 20, RAYWHITE);
